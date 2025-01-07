@@ -1,0 +1,14 @@
+bin/
+obj/
+build/
+.vscode/
+.idea/
+*.log
+*.pid
+*.tmp
+*.swp
+*.bak
+*.iml
+*.exe
+*.out
+*.test
