@@ -1,7 +1,7 @@
 {
     "logPath": "/etc/dns-monitor/dnsexporter.log",
     "logLevel": "INFO",
-    "logToSyslog": true,
+    "logToSyslog": false,
     "logToFile": true,
     "mtlsExporter": {
         "enabled": false,
