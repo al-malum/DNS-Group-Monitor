@@ -46,7 +46,7 @@ type DNSTarget struct {
 // Функция для чтения конфигурационного файла
 func GetConfig() (*Config, error) {
 	var path string
-	flag.StringVar(&path, "c", "/etc/ddidnser/config.json", "path to config file")
+	flag.StringVar(&path, "c", "/etc/gdns-exporter/config.json", "path to config file")
 	flag.Parse()
 	plan, errRead := os.ReadFile(path)
 	if errRead != nil {
