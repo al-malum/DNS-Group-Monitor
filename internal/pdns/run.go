@@ -24,6 +24,8 @@ var Conf, ConfErr = GetConfig()
 // Describe реализует интерфейс prometheus.Collector, описывая метрики, которые будет собирать данный коллектор
 // В канал ch передаются дескрипторы всех метрик, собранных этим коллектором
 func (DnsMetrics *DnsMetricsDesc) Describe(ch chan<- *prometheus.Desc) {
+	// Логирование описания метрик
+	slog.Debug("Describing DNS metrics.")
 	// Описание всех метрик DNS
 	ch <- DnsMetrics.AllServers
 	ch <- DnsMetrics.AvailabileServers
@@ -41,9 +43,12 @@ func (DnsMetrics *DnsMetricsDesc) Collect(ch chan<- prometheus.Metric) {
 
 	wg.Add(1) // Увеличиваем счетчик горутин
 
+	// Логируем начало сбора метрик
+	slog.Debug("Starting collection of DNS metrics.")
 	go func() {
 		defer wg.Done() // Уменьшаем счетчик горутин по завершению
 		// Выполняем проверку доступности DNS серверов для каждой группы
+		slog.Debug("Checking DNS server availability.")
 		CheckAvailabilityDns(Conf.GroupsDNS, chAvailGrp)
 	}()
 
@@ -57,7 +62,8 @@ func (DnsMetrics *DnsMetricsDesc) Collect(ch chan<- prometheus.Metric) {
 	for result := range chAvailGrp {
 		resultCheckingAuth = append(resultCheckingAuth, result...)
 	}
-
+	// Логируем количество групп, для которых будут отправлены метрики
+	slog.Debug("Sending metrics for groups.", slog.Int("num_groups", len(resultCheckingAuth)))
 	// Отправляем метрики для каждой группы
 	for _, item := range resultCheckingAuth {
 		// Создаем уникальный ключ для метрики на основе имени группы
@@ -71,6 +77,7 @@ func (DnsMetrics *DnsMetricsDesc) Collect(ch chan<- prometheus.Metric) {
 		seenMetrics[key] = struct{}{}
 
 		// Отправляем метрики в канал Prometheus
+		slog.Debug("Sending metric for group.", slog.String("group", item.GroupName))
 		ch <- prometheus.MustNewConstMetric(
 			DnsMetrics.AllServers, // Метрика общего количества серверов
 			prometheus.GaugeValue,
@@ -133,11 +140,16 @@ func NewDnsMetrics() *DnsMetricsDesc {
 // В зависимости от конфигурации может быть включен mTLS для безопасного соединения
 func Run() error {
 	if ConfErr != nil {
+		// Логируем ошибку при чтении конфигурации
+		slog.Error("Error reading configuration", "error", ConfErr)
 		return ConfErr // Если ошибка при чтении конфигурации, возвращаем ошибку
 	}
 
 	// Инициализация логгера с заданными параметрами
-	initLogger(Conf.LogPath, Conf.LogLevel)
+	initLogger(Conf.LogPath, Conf.LogLevel, Conf.LogToFile, Conf.LogToSyslog)
+
+	// Логируем успешное чтение конфигурации
+	slog.Info("Configuration loaded successfully.")
 
 	// Регистрируем коллектор метрик для Prometheus
 	reg := prometheus.NewPedanticRegistry()

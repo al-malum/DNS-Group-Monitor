@@ -1,6 +1,8 @@
 {
     "logPath": "/etc/dns-monitor/dnsexporter.log",
     "logLevel": "INFO",
+    "logToSyslog": true,
+    "logToFile": true,
     "mtlsExporter": {
         "enabled": false,
         "key": "/etc/dns-monitor/tls/key.pem",

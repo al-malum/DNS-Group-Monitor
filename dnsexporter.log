@@ -1,3 +1,63 @@
 {"time":"2025-01-08T00:54:35.254068762+03:00","level":"INFO","msg":"Run server without mtls."}
 {"time":"2025-01-08T00:56:57.960756953+03:00","level":"INFO","msg":"Run server without mtls."}
 {"time":"2025-01-08T01:02:21.947315387+03:00","level":"INFO","msg":"Run server without mtls."}
+{"time":"2025-01-08T01:29:14.101530001+03:00","level":"INFO","msg":"Configuration loaded successfully."}
+{"time":"2025-01-08T01:29:14.101631191+03:00","level":"INFO","msg":"Run server without mtls."}
+{"time":"2025-01-08T01:29:14.10164144+03:00","level":"INFO","msg":"Starting HTTP server without mTLS","addr":":9100"}
+{"time":"2025-01-08T01:29:27.018741584+03:00","level":"INFO","msg":"Starting to check availability for all DNS groups"}
+{"time":"2025-01-08T01:29:27.018809863+03:00","level":"INFO","msg":"Processing DNS group","groupName":"MSA Data Center","serversCount":2}
+{"time":"2025-01-08T01:29:27.018829389+03:00","level":"INFO","msg":"Processing DNS group","groupName":"NY Data Center","serversCount":2}
+{"time":"2025-01-08T01:29:27.018881377+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.4.4","fqdn":"powerdns.com.","port":53}
+{"time":"2025-01-08T01:29:27.018921673+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.8.8","fqdn":"chatgpt.com.","port":53}
+{"time":"2025-01-08T01:29:27.019035957+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.8.8","fqdn":"yandex.ru.","port":53}
+{"time":"2025-01-08T01:29:27.019085801+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.4.4","fqdn":"example.com.","port":53}
+{"time":"2025-01-08T01:29:27.038534868+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-1.1","address":"8.8.8.8","responseTime":19}
+{"time":"2025-01-08T01:29:27.038577939+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-1.1","address":"8.8.8.8","timeToResponse":19}
+{"time":"2025-01-08T01:29:27.039865397+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-2.1","address":"8.8.4.4","responseTime":20}
+{"time":"2025-01-08T01:29:27.039894622+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-2.1","address":"8.8.4.4","timeToResponse":20}
+{"time":"2025-01-08T01:29:27.050067358+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-1.2","address":"8.8.8.8","responseTime":30}
+{"time":"2025-01-08T01:29:27.050134153+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-1.2","address":"8.8.8.8","timeToResponse":30}
+{"time":"2025-01-08T01:29:27.050163007+03:00","level":"INFO","msg":"Finished processing DNS group","groupName":"NY Data Center","allServers":2,"availableServers":2,"unavailableServers":0,"maintenanceServers":0}
+{"time":"2025-01-08T01:29:27.078606387+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-2.2","address":"8.8.4.4","responseTime":59}
+{"time":"2025-01-08T01:29:27.078681528+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-2.2","address":"8.8.4.4","timeToResponse":59}
+{"time":"2025-01-08T01:29:27.07871451+03:00","level":"INFO","msg":"Finished processing DNS group","groupName":"MSA Data Center","allServers":2,"availableServers":2,"unavailableServers":0,"maintenanceServers":0}
+{"time":"2025-01-08T01:29:27.07874125+03:00","level":"INFO","msg":"Finished checking availability for all DNS groups"}
+{"time":"2025-01-08T01:31:07.607941907+03:00","level":"INFO","msg":"Starting to check availability for all DNS groups"}
+{"time":"2025-01-08T01:31:07.608016236+03:00","level":"INFO","msg":"Processing DNS group","groupName":"MSA Data Center","serversCount":2}
+{"time":"2025-01-08T01:31:07.608047866+03:00","level":"INFO","msg":"Processing DNS group","groupName":"NY Data Center","serversCount":2}
+{"time":"2025-01-08T01:31:07.60807127+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.4.4","fqdn":"powerdns.com.","port":53}
+{"time":"2025-01-08T01:31:07.608097168+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.4.4","fqdn":"example.com.","port":53}
+{"time":"2025-01-08T01:31:07.608127215+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.8.8","fqdn":"chatgpt.com.","port":53}
+{"time":"2025-01-08T01:31:07.608532746+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.8.8","fqdn":"yandex.ru.","port":53}
+{"time":"2025-01-08T01:31:07.6302214+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-2.1","address":"8.8.4.4","responseTime":21}
+{"time":"2025-01-08T01:31:07.630258169+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-1.2","address":"8.8.8.8","responseTime":21}
+{"time":"2025-01-08T01:31:07.630297553+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-1.2","address":"8.8.8.8","timeToResponse":21}
+{"time":"2025-01-08T01:31:07.630263329+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-2.1","address":"8.8.4.4","timeToResponse":21}
+{"time":"2025-01-08T01:31:07.631473331+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-1.1","address":"8.8.8.8","responseTime":22}
+{"time":"2025-01-08T01:31:07.631490003+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-1.1","address":"8.8.8.8","timeToResponse":22}
+{"time":"2025-01-08T01:31:07.631504841+03:00","level":"INFO","msg":"Finished processing DNS group","groupName":"NY Data Center","allServers":2,"availableServers":2,"unavailableServers":0,"maintenanceServers":0}
+{"time":"2025-01-08T01:31:07.672760754+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-2.2","address":"8.8.4.4","responseTime":64}
+{"time":"2025-01-08T01:31:07.672793155+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-2.2","address":"8.8.4.4","timeToResponse":64}
+{"time":"2025-01-08T01:31:07.672814324+03:00","level":"INFO","msg":"Finished processing DNS group","groupName":"MSA Data Center","allServers":2,"availableServers":2,"unavailableServers":0,"maintenanceServers":0}
+{"time":"2025-01-08T01:31:07.672828711+03:00","level":"INFO","msg":"Finished checking availability for all DNS groups"}
+{"time":"2025-01-08T01:32:54.91037381+03:00","level":"INFO","msg":"Configuration loaded successfully."}
+{"time":"2025-01-08T01:32:54.910464891+03:00","level":"INFO","msg":"Run server without mtls."}
+{"time":"2025-01-08T01:32:54.910473748+03:00","level":"INFO","msg":"Starting HTTP server without mTLS","addr":":9100"}
+{"time":"2025-01-08T01:32:58.730999403+03:00","level":"INFO","msg":"Starting to check availability for all DNS groups"}
+{"time":"2025-01-08T01:32:58.731065137+03:00","level":"INFO","msg":"Processing DNS group","groupName":"MSA Data Center","serversCount":2}
+{"time":"2025-01-08T01:32:58.731137984+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.4.4","fqdn":"powerdns.com.","port":53}
+{"time":"2025-01-08T01:32:58.731140629+03:00","level":"INFO","msg":"Processing DNS group","groupName":"NY Data Center","serversCount":2}
+{"time":"2025-01-08T01:32:58.731276023+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.8.8","fqdn":"chatgpt.com.","port":53}
+{"time":"2025-01-08T01:32:58.731304246+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.4.4","fqdn":"example.com.","port":53}
+{"time":"2025-01-08T01:32:58.731426415+03:00","level":"INFO","msg":"Sending DNS request.","address":"8.8.8.8","fqdn":"yandex.ru.","port":53}
+{"time":"2025-01-08T01:32:58.753341504+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-1.1","address":"8.8.8.8","responseTime":21}
+{"time":"2025-01-08T01:32:58.753372733+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-1.1","address":"8.8.8.8","timeToResponse":21}
+{"time":"2025-01-08T01:32:58.755889259+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-2.2","address":"8.8.4.4","responseTime":24}
+{"time":"2025-01-08T01:32:58.755909116+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-2.2","address":"8.8.4.4","timeToResponse":24}
+{"time":"2025-01-08T01:32:58.755935736+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-2.1","address":"8.8.4.4","responseTime":24}
+{"time":"2025-01-08T01:32:58.755956044+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-2.1","address":"8.8.4.4","timeToResponse":24}
+{"time":"2025-01-08T01:32:58.75596972+03:00","level":"INFO","msg":"Finished processing DNS group","groupName":"MSA Data Center","allServers":2,"availableServers":2,"unavailableServers":0,"maintenanceServers":0}
+{"time":"2025-01-08T01:32:58.764981956+03:00","level":"INFO","msg":"DNS request succeeded.","serverID":"pdns-auth-1.2","address":"8.8.8.8","responseTime":33}
+{"time":"2025-01-08T01:32:58.764995331+03:00","level":"INFO","msg":"DNS response received.","serverID":"pdns-auth-1.2","address":"8.8.8.8","timeToResponse":33}
+{"time":"2025-01-08T01:32:58.765003827+03:00","level":"INFO","msg":"Finished processing DNS group","groupName":"NY Data Center","allServers":2,"availableServers":2,"unavailableServers":0,"maintenanceServers":0}
+{"time":"2025-01-08T01:32:58.765010069+03:00","level":"INFO","msg":"Finished checking availability for all DNS groups"}

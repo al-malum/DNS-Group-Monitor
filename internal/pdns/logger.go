@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func initLogger(logPath, logLevel string) {
+func initLogger(logPath, logLevel string, LogToSyslog, LogToFile bool) {
 	var level slog.Level
 	var src bool
 	switch logLevel {

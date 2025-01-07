@@ -1,16 +1,11 @@
 package pdns
 
 import (
+	"log/slog"
 	"sync"
 )
 
-// AvailabilityGroup - структура, которая представляет собой отчет о доступности группы DNS серверов.
-// Включает:
-// - имя группы серверов,
-// - общее количество серверов в группе,
-// - количество доступных серверов,
-// - количество недоступных серверов,
-// - количество серверов на обслуживании.
+// AvailabilityGroup - структура, представляющая собой отчет о доступности группы DNS серверов
 type AvailabilityGroup struct {
 	GroupName          string // Имя группы серверов DNS
 	AllServers         int8   // Общее количество серверов в группе
@@ -19,9 +14,7 @@ type AvailabilityGroup struct {
 	MaintenanceServers int8   // Количество серверов на обслуживании
 }
 
-// processingDnsGroup - функция для обработки конкретной группы DNS серверов.
-// Для каждого сервера в группе выполняется DNS запрос, и по результатам обновляются статистики доступности.
-// Функция возвращает объект AvailabilityGroup с результатами работы для данной группы.
+// processingDnsGroup - функция для обработки конкретной группы DNS серверов
 func processingDnsGroup(group GroupDNS) AvailabilityGroup {
 	dnsClient := CreateDnsClient()                             // Создаем DNS клиент с заданными настройками (тайм-ауты и т.д.)
 	chDns := make(chan DnsResponseData, len(group.DNSServers)) // Канал для получения данных о каждом сервере
@@ -36,11 +29,15 @@ func processingDnsGroup(group GroupDNS) AvailabilityGroup {
 	}
 	counter := 0 // Счетчик, который отслеживает количество обработанных серверов
 
+	// Логируем начало обработки группы
+	slog.Info("Processing DNS group", slog.String("groupName", group.GroupName), slog.Int("serversCount", len(group.DNSServers)))
+
 	// Проходим по каждому серверу из группы и проверяем его состояние
 	for _, target := range group.DNSServers {
 		counter++
 		if target.Maintenance { // Если сервер находится на обслуживании, увеличиваем счетчик и пропускаем его
 			availGroup.MaintenanceServers++
+			slog.Debug("Server is under maintenance", slog.String("serverID", target.ServerID), slog.String("serverIP", target.IP))
 			continue
 		}
 		wg.Add(1) // Увеличиваем счетчик горутин для каждого запроса
@@ -56,6 +53,13 @@ func processingDnsGroup(group GroupDNS) AvailabilityGroup {
 
 	// Обрабатываем результаты запросов, полученные через канал
 	for result := range chDns {
+		// Логируем результаты доступности каждого сервера
+		if result.Availability {
+			slog.Debug("Server is available", slog.String("serverID", result.ServerID), slog.String("serverIP", result.ServerID), slog.Duration("responseTime", result.TimeToResponse))
+		} else {
+			slog.Debug("Server is unavailable", slog.String("serverID", result.ServerID), slog.String("serverIP", result.ServerID))
+		}
+
 		// Если сервер доступен, увеличиваем счетчик доступных серверов, иначе недоступных
 		switch result.Availability {
 		case true:
@@ -65,16 +69,26 @@ func processingDnsGroup(group GroupDNS) AvailabilityGroup {
 		}
 	}
 
+	// Логируем итоговые результаты для группы
+	slog.Info("Finished processing DNS group",
+		slog.String("groupName", availGroup.GroupName),
+		slog.Int("allServers", int(availGroup.AllServers)),
+		slog.Int("availableServers", int(availGroup.AvailabileServers)),
+		slog.Int("unavailableServers", int(availGroup.UnavailableServers)),
+		slog.Int("maintenanceServers", int(availGroup.MaintenanceServers)),
+	)
+
 	// Возвращаем итоговый результат по группе
 	return availGroup
 }
 
-// CheckAvailabilityDns - основная функция для проверки доступности всех DNS серверов во всех группах.
-// Для каждой группы DNS серверов создается горутина, которая выполняет проверку доступности серверов в группе.
-// Все результаты отправляются в канал chAvailMgcl, который будет содержать список объектов AvailabilityGroup для каждой группы.
+// CheckAvailabilityDns - основная функция для проверки доступности всех DNS серверов во всех группах
 func CheckAvailabilityDns(dnsGroups []GroupDNS, chAvailMgcl chan []AvailabilityGroup) {
 	var wgAvailAuth sync.WaitGroup    // Ожидание завершения всех горутин по обработке групп
 	var availList []AvailabilityGroup // Список для хранения результатов по всем группам
+
+	// Логируем начало проверки доступности всех групп
+	slog.Info("Starting to check availability for all DNS groups")
 
 	// Обрабатываем каждую группу DNS серверов
 	for _, group := range dnsGroups {
@@ -92,6 +106,10 @@ func CheckAvailabilityDns(dnsGroups []GroupDNS, chAvailMgcl chan []AvailabilityG
 
 	// Ожидаем завершения всех горутин
 	wgAvailAuth.Wait()
+
+	// Логируем завершение проверки доступности всех групп
+	slog.Info("Finished checking availability for all DNS groups")
+
 	// Отправляем собранные результаты в канал
 	chAvailMgcl <- availList
 }

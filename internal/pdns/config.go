@@ -3,7 +3,6 @@ package pdns
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log/slog"
 	"os"
 
@@ -19,6 +18,8 @@ import (
 type Config struct {
 	LogPath      string     `json:"logPath"`      // Путь к файлу логов
 	LogLevel     string     `json:"logLevel"`     // Уровень логирования
+	LogToFile    bool       `json:"logToFile"`    // Логирование в файл
+	LogToSyslog  bool       `json:"logToSyslog"`  // Логирование в syslog
 	MtlsExporter MtlsConfig `json:"mtlsExporter"` // Конфигурация mTLS
 	GroupsDNS    []GroupDNS `json:"groupsDns"`    // Список групп DNS серверов
 }
@@ -68,11 +69,14 @@ func GetConfig() (*Config, error) {
 	flag.StringVar(&path, "c", "/etc/dns-monitor/config.json", "path to config file")
 	flag.Parse()
 
+	// Логирование пути к конфигурационному файлу
+	slog.Debug("Reading configuration file", slog.String("configFilePath", path))
+
 	// Чтение содержимого конфигурационного файла
 	plan, errRead := os.ReadFile(path)
 	if errRead != nil {
 		// Логируем ошибку чтения файла и возвращаем ошибку
-		slog.Error(errRead.Error())
+		slog.Error("Error reading configuration file", slog.String("configFilePath", path), slog.String("error", errRead.Error()))
 		return nil, errRead
 	}
 
@@ -86,7 +90,7 @@ func GetConfig() (*Config, error) {
 		// Логируем ошибки валидации полей структуры
 		errs := err.(validator.ValidationErrors)
 		for _, fieldErr := range errs {
-			slog.Error(fmt.Sprintf("field %s %s %s\n", fieldErr.Namespace(), fieldErr.ActualTag(), fieldErr.Param()))
+			slog.Error("Validation error", slog.String("field", fieldErr.Namespace()), slog.String("tag", fieldErr.ActualTag()), slog.String("param", fieldErr.Param()))
 		}
 		return nil, err // Возвращаем ошибку валидации
 	}
