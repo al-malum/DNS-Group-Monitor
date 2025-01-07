@@ -10,82 +10,87 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// Структура, где поля будут содержать дескрипторы метрик dns
+// DnsMetricsDesc содержит дескрипторы метрик для мониторинга состояния DNS серверов в группе
 type DnsMetricsDesc struct {
-	AllServers         *prometheus.Desc
-	AvailabileServers  *prometheus.Desc
-	UnavailableServers *prometheus.Desc
-	MaintenanceServers *prometheus.Desc
+	AllServers         *prometheus.Desc // Дескриптор метрики для общего количества DNS серверов в группе
+	AvailabileServers  *prometheus.Desc // Дескриптор метрики для доступных DNS серверов
+	UnavailableServers *prometheus.Desc // Дескриптор метрики для недоступных DNS серверов
+	MaintenanceServers *prometheus.Desc // Дескриптор метрики для серверов, находящихся на обслуживании
 }
 
-// глобальное определение конфигурации и ошибки чтения (если есть)
+// глобальные переменные для конфигурации и ошибок при чтении конфигурации
 var Conf, ConfErr = GetConfig()
 
-// Реализация интерфейса collector
-// метод Describe возвращает описание(дескриптор) всех метрик собранных этим коллектором в выделенный канал
+// Describe реализует интерфейс prometheus.Collector, описывая метрики, которые будет собирать данный коллектор
+// В канал ch передаются дескрипторы всех метрик, собранных этим коллектором
 func (DnsMetrics *DnsMetricsDesc) Describe(ch chan<- *prometheus.Desc) {
-	ch <- DnsMetrics.AllServers // экземпляр DnsMetrics создается в функции NewDnsMetrics()
+	// Описание всех метрик DNS
+	ch <- DnsMetrics.AllServers
 	ch <- DnsMetrics.AvailabileServers
 	ch <- DnsMetrics.UnavailableServers
 	ch <- DnsMetrics.MaintenanceServers
 }
 
-// метод Collect возвращает в канал саму метрику и вызывается каждый раз при получении данных
-// так же возвращается дескриптор метрики
-// дескриптор, который передает Collect должен быть одним из тех, что возвращает Describe
-// метрики, использующие один и тот же дескриптор, должны отличаться лейблами
+// Collect реализует интерфейс prometheus.Collector, собирая метрики для мониторинга
+// В канал ch передаются сами метрики для Prometheus
+// Каждый раз, когда вызывается Collect, обновляются значения метрик
 func (DnsMetrics *DnsMetricsDesc) Collect(ch chan<- prometheus.Metric) {
 	var wg sync.WaitGroup
 	var resultCheckingAuth []AvailabilityGroup
-	chAvailGrp := make(chan []AvailabilityGroup, 50)
+	chAvailGrp := make(chan []AvailabilityGroup, 50) // Канал для передачи результатов проверки доступности
 
-	wg.Add(1) // Увеличиваем счетчик для двух горутин
+	wg.Add(1) // Увеличиваем счетчик горутин
 
 	go func() {
-		defer wg.Done() // Уменьшаем счетчик в конце выполнения горутины
+		defer wg.Done() // Уменьшаем счетчик горутин по завершению
+		// Выполняем проверку доступности DNS серверов для каждой группы
 		CheckAvailabilityDns(Conf.GroupsDNS, chAvailGrp)
 	}()
 
+	// Ожидаем завершения горутины
 	wg.Wait()
 	close(chAvailGrp)
 
 	seenMetrics := make(map[string]struct{}) // Карта для отслеживания уже отправленных метрик
 
+	// Обрабатываем результаты проверки доступности DNS серверов
 	for result := range chAvailGrp {
 		resultCheckingAuth = append(resultCheckingAuth, result...)
 	}
 
+	// Отправляем метрики для каждой группы
 	for _, item := range resultCheckingAuth {
-		// Создаем уникальный ключ для метрики, используя значение label "cluster"
+		// Создаем уникальный ключ для метрики на основе имени группы
 		key := item.GroupName
 
-		// Проверяем, была ли уже отправлена такая метрика
+		// Проверяем, была ли уже отправлена метрика для данной группы
 		if _, exists := seenMetrics[key]; exists {
 			continue // Пропускаем, если метрика уже была отправлена
 		}
 		// Отметим, что метрика была отправлена
 		seenMetrics[key] = struct{}{}
-		// Отправляем метрики в канал
+
+		// Отправляем метрики в канал Prometheus
 		ch <- prometheus.MustNewConstMetric(
-			DnsMetrics.AllServers,
+			DnsMetrics.AllServers, // Метрика общего количества серверов
 			prometheus.GaugeValue,
-			float64(item.AllServers),
-			item.GroupName,
+			float64(item.AllServers), // Значение метрики
+			item.GroupName,           // Лейбл, идентифицирующий группу серверов
 		)
 		ch <- prometheus.MustNewConstMetric(
-			DnsMetrics.AvailabileServers,
+			DnsMetrics.AvailabileServers, // Метрика доступных серверов
 			prometheus.GaugeValue,
 			float64(item.AvailabileServers),
 			item.GroupName,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			DnsMetrics.UnavailableServers,
+			DnsMetrics.UnavailableServers, // Метрика недоступных серверов
 			prometheus.GaugeValue,
 			float64(item.UnavailableServers),
 			item.GroupName,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			DnsMetrics.MaintenanceServers,
+			DnsMetrics.MaintenanceServers, // Метрика серверов на обслуживании
 			prometheus.GaugeValue,
 			float64(item.MaintenanceServers),
 			item.GroupName,
@@ -93,58 +98,75 @@ func (DnsMetrics *DnsMetricsDesc) Collect(ch chan<- prometheus.Metric) {
 	}
 }
 
-// Создание нового объекта, структуры, полем которой является дескриптор (дескрипторы) метрик
+// NewDnsMetrics создает новый объект DnsMetricsDesc с дескрипторами для метрик DNS серверов
+// Каждая метрика будет собираться с лейблом, соответствующим группе серверов
 func NewDnsMetrics() *DnsMetricsDesc {
 	return &DnsMetricsDesc{
 		AllServers: prometheus.NewDesc(
-			"all_servers", // имя метрики
-			"Общее количество кластеров днс в составе большого кластера", // хелп метрики
-			[]string{"server"},  // variableLabels, лейблы метрики в зависимости от входящих данных при формировании метрики в методе Collect()
-			prometheus.Labels{}, // constLabels, заранее определяемые лейблы метрик этого типа (опционально)
+			"all_servers", // Имя метрики для общего количества серверов
+			"Total number of DNS servers in the group", // Описание метрики
+			[]string{"group"},                          // Лейблы метрики: идентификатор группы серверов
+			prometheus.Labels{},                        // Нет предустановленных лейблов
 		),
 		AvailabileServers: prometheus.NewDesc(
-			"available_servers", // имя метрики
-			"Количество доступных кластеров днс в составе большого кластера", // хелп метрики
-			[]string{"server"},  // variableLabels, лейблы метрики в зависимости от входящих данных при формировании метрики в методе Collect()
-			prometheus.Labels{}, // constLabels, заранее определяемые лейблы метрик этого типа (опционально)
+			"available_servers",                            // Имя метрики для доступных серверов
+			"Number of available DNS servers in the group", // Описание метрики
+			[]string{"group"},                              // Лейблы метрики: идентификатор группы серверов
+			prometheus.Labels{},                            // Нет предустановленных лейблов
 		),
 		UnavailableServers: prometheus.NewDesc(
-			"unavailable_servers", // имя метрики
-			"Количество недоступных кластеров днс в составе большого кластера", // хелп метрики
-			[]string{"server"},  // variableLabels, лейблы метрики в зависимости от входящих данных при формировании метрики в методе Collect()
-			prometheus.Labels{}, // constLabels, заранее определяемые лейблы метрик этого типа (опционально)
+			"unavailable_servers",                            // Имя метрики для недоступных серверов
+			"Number of unavailable DNS servers in the group", // Описание метрики
+			[]string{"group"},                                // Лейблы метрики: идентификатор группы серверов
+			prometheus.Labels{},                              // Нет предустановленных лейблов
 		),
 		MaintenanceServers: prometheus.NewDesc(
-			"maintenance_servers", // имя метрики
-			"Количество кластеров днс в составе большого кластера на обслуживании", // хелп метрики
-			[]string{"server"},  // variableLabels, лейблы метрики в зависимости от входящих данных при формировании метрики в методе Collect()
-			prometheus.Labels{}, // constLabels, заранее определяемые лейблы метрик этого типа (опционально)
+			"maintenance_servers", // Имя метрики для серверов на обслуживании
+			"Number of DNS servers in the group under maintenance", // Описание метрики
+			[]string{"group"},   // Лейблы метрики: идентификатор группы серверов
+			prometheus.Labels{}, // Нет предустановленных лейблов
 		),
 	}
 }
 
+// Run инициализирует сервер и запускает сбор метрик для Prometheus
+// В зависимости от конфигурации может быть включен mTLS для безопасного соединения
 func Run() error {
 	if ConfErr != nil {
-		return ConfErr
+		return ConfErr // Если ошибка при чтении конфигурации, возвращаем ошибку
 	}
+
+	// Инициализация логгера с заданными параметрами
 	initLogger(Conf.LogPath, Conf.LogLevel)
+
+	// Регистрируем коллектор метрик для Prometheus
 	reg := prometheus.NewPedanticRegistry()
 	workerDns := NewDnsMetrics()
+
+	// Настройки для mTLS (если включен)
 	mtlsSett := web.MtlsSettings{
 		Enabled:   Conf.MtlsExporter.Enabled,
 		Key:       Conf.MtlsExporter.Key,
 		Cert:      Conf.MtlsExporter.Cert,
 		AllowedCN: Conf.MtlsExporter.AllowedCN,
 	}
+
+	// Регистрируем наш коллектор метрик в Prometheus
 	reg.MustRegister(workerDns)
+
+	// Обрабатываем запросы к меткам с использованием mTLS или без него
 	promHandler := promhttp.HandlerFor(reg, promhttp.HandlerOpts{})
 	http.Handle("/metrics", web.AuthenticationCN(promHandler, mtlsSett))
+
 	if Conf.MtlsExporter.Enabled {
+		// Запускаем сервер с поддержкой mTLS
 		slog.Info("Run server with mtls.")
 		RunServerWithTls(promHandler, Conf.MtlsExporter)
 	} else {
+		// Запускаем сервер без mTLS
 		slog.Info("Run server without mtls.")
 		RunServerWithousTls(promHandler)
 	}
+
 	return nil
 }
