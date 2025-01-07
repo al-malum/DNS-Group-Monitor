@@ -108,13 +108,13 @@ Example configuration file `config.json` (comments are not allowed in the actual
 3. Запустите контейнер:  
     Run the container:
     ```bash
-    docker run -d -p 8080:8080 dns-group-monitor
+    docker run -d --name dns-group-monitor -p 8080:8080 dns-group-monitor
     ```
 
 ### Сборка с помощью Go / Building with Go
 
-1. Убедитесь, что у вас установлен Go (версии 1.16 и выше).  
-    Make sure Go is installed (version 1.16 or later).
+1. Убедитесь, что у вас установлен Go (версии 1.21 и выше).  
+    Make sure Go is installed (version 1.21 or later).
 
 2. Склонируйте репозиторий:  
     Clone the repository:
@@ -126,7 +126,7 @@ Example configuration file `config.json` (comments are not allowed in the actual
 3. Соберите проект:  
     Build the project:
     ```bash
-    go build -ldflags "-X main.desiredPathPid=/etc/dns-monitor/dns-monitor.pid" cmd/pdns/main.go
+    go build -ldflags "-X main.desiredPathPid=/etc/dns-monitor/dns-monitor.pid" -o dns-group-monitor cmd/pdns/main.go
     ```
 
     Замените `/etc/dns-monitor/dns-monitor.pid` на актуальный путь к PID файлу в вашей системе.  
