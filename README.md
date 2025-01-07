@@ -15,64 +15,67 @@
 
 ## Пример конфигурации
 
-Пример конфигурационного файла `config.json`:
+Пример конфигурационного файла `config.json`, в работающем конфигурационном файле комментарии не допускаются:
 
 ```json
 {
-    "logPath": "/etc/gdns-exporter/dnsexporter.log",
-    "logLevel": "INFO",
-    "mtlsExporter": {
-        "enabled": false,
-        "key": "/etc/gdns-exporter/tls/key.pem",
-        "cert": "/etc/gdns-exporter/tls/cert.pem",
-        "allowedCN": ["localhost2", "localhost1"],
-        "description": "mtls for the exporter page"
+    "logPath": "/etc/gdns-exporter/dnsexporter.log",   // Путь к файлу логов, где будут сохраняться логи работы приложения.
+    "logLevel": "INFO",                                 // Уровень логирования. Может быть: "DEBUG", "INFO", "WARN", "ERROR".
+    
+    "mtlsExporter": {                                   // Настройки для mTLS (двусторонняя TLS аутентификация).
+        "enabled": false,                               // Включить ли mTLS для экспорта метрик. Если true, будет использоваться TLS с проверкой клиентского сертификата.
+        "key": "/etc/gdns-exporter/tls/key.pem",        // Путь к приватному ключу сервера для mTLS.
+        "cert": "/etc/gdns-exporter/tls/cert.pem",      // Путь к публичному сертификату сервера для mTLS.
+        "allowedCN": ["localhost2", "localhost1"],      // Список разрешённых значений CN (Common Name) для клиентских сертификатов. Если mTLS включен, то только клиенты с указанным CN смогут подключиться.
+        "description": "mtls for the exporter page"     // Описание модуля mTLS для экспорта метрик.
     },
-    "groupsDns": [
+
+    "groupsDns": [                                      // Массив групп DNS серверов. Каждая группа содержит несколько серверов DNS.
         {
-            "groupName": "NY Data Center",
-            "dnsServers": [
+            "groupName": "NY Data Center",               // Название группы DNS серверов (например, для группы серверов в определённом дата-центре).
+            "dnsServers": [                              // Список DNS серверов в этой группе.
                 {
-                    "serverID": "pdns-auth-1.1",
-                    "IP": "8.8.8.8",
-                    "dnsPort": 53,
-                    "requestedRecord": "yandex.ru",
-                    "maintenance": false,
-                    "description": ""
+                    "serverID": "pdns-auth-1.1",         // Уникальный идентификатор сервера в группе.
+                    "IP": "8.8.8.8",                    // IP адрес DNS сервера.
+                    "dnsPort": 53,                      // Порт DNS сервера (обычно 53).
+                    "requestedRecord": "yandex.ru",     // Запрашиваемая запись (например, для проверки доступности этого DNS сервера).
+                    "maintenance": false,               // Флаг, указывающий, находится ли сервер в обслуживании. Если true, то сервер не проверяется на доступность.
+                    "description": ""                   // Дополнительное описание сервера.
                 },
                 {
-                    "serverID": "pdns-auth-1.2",
-                    "IP": "8.8.8.8",
-                    "dnsPort": 53,
-                    "requestedRecord": "chatgpt.com",
-                    "maintenance": false,
-                    "description": ""
+                    "serverID": "pdns-auth-1.2",         // Уникальный идентификатор для другого сервера.
+                    "IP": "8.8.8.8",                    // IP адрес второго DNS сервера.
+                    "dnsPort": 53,                      // Порт DNS сервера.
+                    "requestedRecord": "chatgpt.com",   // Запрашиваемая запись для второго сервера.
+                    "maintenance": false,               // Флаг, указывающий, находится ли сервер в обслуживании.
+                    "description": ""                   // Дополнительное описание второго сервера.
                 }
             ]
         },
         {
-            "groupName": "MSA Data Center",
-            "dnsServers": [
+            "groupName": "MSA Data Center",               // Название второй группы DNS серверов (например, для другой локации или дата-центра).
+            "dnsServers": [                              // Список DNS серверов для этой группы.
                 {
-                    "serverID": "pdns-auth-2.1",
-                    "IP": "8.8.4.4",
-                    "dnsPort": 53,
-                    "requestedRecord": "example.com",
-                    "maintenance": false,
-                    "description": ""
+                    "serverID": "pdns-auth-2.1",         // Уникальный идентификатор первого сервера в группе.
+                    "IP": "8.8.4.4",                    // IP адрес первого DNS сервера.
+                    "dnsPort": 53,                      // Порт DNS сервера.
+                    "requestedRecord": "example.com",   // Запрашиваемая запись для первого сервера.
+                    "maintenance": false,               // Флаг обслуживания для первого сервера.
+                    "description": ""                   // Описание для первого сервера.
                 },
                 {
-                    "serverID": "pdns-auth-2.2",
-                    "IP": "8.8.4.4",
-                    "dnsPort": 53,
-                    "requestedRecord": "powerdns.com",
-                    "maintenance": false,
-                    "description": ""
+                    "serverID": "pdns-auth-2.2",         // Уникальный идентификатор второго сервера.
+                    "IP": "8.8.4.4",                    // IP адрес второго DNS сервера.
+                    "dnsPort": 53,                      // Порт DNS сервера.
+                    "requestedRecord": "powerdns.com",  // Запрашиваемая запись для второго сервера.
+                    "maintenance": false,               // Флаг обслуживания для второго сервера.
+                    "description": ""                   // Описание второго сервера.
                 }
             ]
         }
     ]
 }
+
 ```
 
 ## Установка
