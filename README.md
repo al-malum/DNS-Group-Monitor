@@ -30,12 +30,12 @@ Example configuration file `config.json` (comments are not allowed in the actual
 
 ```json
 {
-    "logPath": "/etc/gdns-exporter/dnsexporter.log",   // Путь к файлу логов, где будут сохраняться логи работы приложения.  
+    "logPath": "/etc/dns-group-monitor/dnsexporter.log",   // Путь к файлу логов, где будут сохраняться логи работы приложения.  
     "logLevel": "INFO",                                 // Уровень логирования. Может быть: "DEBUG", "INFO", "WARN", "ERROR".  
     "mtlsExporter": {                                   // Настройки для mTLS (двусторонняя TLS аутентификация).  
         "enabled": false,                               // Включить ли mTLS для экспорта метрик. Если true, будет использоваться TLS с проверкой клиентского сертификата.  
-        "key": "/etc/gdns-exporter/tls/key.pem",        // Путь к приватному ключу сервера для mTLS.  
-        "cert": "/etc/gdns-exporter/tls/cert.pem",      // Путь к публичному сертификату сервера для mTLS.  
+        "key": "/etc/dns-group-monitor/tls/key.pem",        // Путь к приватному ключу сервера для mTLS.  
+        "cert": "/etc/dns-group-monitor/tls/cert.pem",      // Путь к публичному сертификату сервера для mTLS.  
         "allowedCN": ["localhost2", "localhost1"],      // Список разрешённых значений CN (Common Name) для клиентских сертификатов. Если mTLS включен, то только клиенты с указанным CN смогут подключиться.  
         "description": "mtls for the exporter page"     // Описание модуля mTLS для экспорта метрик.  
     },  
@@ -126,11 +126,11 @@ Example configuration file `config.json` (comments are not allowed in the actual
 3. Соберите проект:  
     Build the project:
     ```bash
-    go build -ldflags "-X main.desiredPathPid=/etc/dns-monitor/dns-monitor.pid" -o dns-group-monitor cmd/pdns/main.go
+    go build -ldflags "-X main.desiredPathPid=/etc/dns-group-monitor/dns-group-monitor.pid" -o dns-group-monitor cmd/pdns/main.go
     ```
 
-    Замените `/etc/dns-monitor/dns-monitor.pid` на актуальный путь к PID файлу в вашей системе.  
-    Replace `/etc/dns-monitor/dns-monitor.pid` with the actual path to the PID file on your system.
+    Замените `/etc/dns-group-monitor/dns-group-monitor.pid` на актуальный путь к PID файлу в вашей системе.  
+    Replace `/etc/dns-group-monitor/dns-group-monitor.pid` with the actual path to the PID file on your system.
 
 4. Запустите приложение:  
     Run the application:

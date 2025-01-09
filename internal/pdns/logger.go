@@ -96,8 +96,8 @@ func initLogger(logPath, logLevel string, LogToSyslog, LogToFile bool) {
 	// - "component" может использоваться для указания компонента приложения
 	// - "environment" может использоваться для указания окружения (например, "production" или "development")
 	logger = logger.With(
-		slog.String("component", "dns-monitor"),  // Добавляем тег для компонента приложения
-		slog.String("environment", "production"), // Добавляем тег для окружения (например, production, development)
+		slog.String("component", "dns-group-monitor"), // Добавляем тег для компонента приложения
+		slog.String("environment", "production"),      // Добавляем тег для окружения (например, production, development)
 	)
 
 	// Устанавливаем созданный логгер как дефолтный для всей программы

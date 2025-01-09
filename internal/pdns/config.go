@@ -66,7 +66,7 @@ type DNSTarget struct {
 func GetConfig() (*Config, error) {
 	var path string
 	// Чтение флага с путем к файлу конфигурации
-	flag.StringVar(&path, "c", "/etc/dns-monitor/config.json", "path to config file")
+	flag.StringVar(&path, "c", "/etc/dns-group-monitor/config.json", "path to config file")
 	flag.Parse()
 
 	// Логирование пути к конфигурационному файлу
